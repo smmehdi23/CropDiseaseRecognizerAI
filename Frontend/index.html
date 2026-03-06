@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Disease Recognizer</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">🌾</div>
+                <div>
+                    <p class="logo-title">CropAI</p>
+                    <p class="logo-subtitle">Disease Recognizer</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-page="dashboard">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    Dashboard
+                </button>
+                <button class="nav-item" data-page="scan">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M6 9l6 6 6-6"></path>
+                    </svg>
+                    New Scan
+                </button>
+                <button class="nav-item" data-page="diseases">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M12 2l2 4h4l-3 3 1 4-4-3-4 3 1-4-3-3h4z"></path>
+                    </svg>
+                    Disease Library
+                </button>
+                <button class="nav-item" data-page="settings">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m5.08 5.08l4.24 4.24M1 12h6m6 0h6M4.22 19.78l4.24-4.24m5.08-5.08l4.24-4.24"></path>
+                    </svg>
+                    Settings
+                </button>
+            </nav>
+
+            <div class="model-status">
+                <div class="status-header">
+                    <span class="status-label">Models</span>
+                    <span class="status-badge">
+                        <span class="status-dot"></span>
+                        <span id="status-text">Ready</span>
+                    </span>
+                </div>
+                <p class="status-model" id="model-count">0 Models</p>
+                <p class="status-accuracy" id="model-info">Lazy Loading Enabled</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1 class="page-title">Dashboard</h1>
+                    <p class="page-subtitle">Crop Disease Recognizer — March 2026</p>
+                </div>
+                <div class="header-right">
+                    <button class="btn-upload" id="uploadBtn">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        Upload Image
+                    </button>
+                    <button class="btn-notification">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <span class="notification-dot"></span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Dashboard Page -->
+                <div class="page" id="dashboard-page" style="display: block;">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);">📊</div>
+                                <span class="stat-change">--</span>
+                            </div>
+                            <p class="stat-label">Total Scans</p>
+                            <p class="stat-value">0</p>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">⚠️</div>
+                                <span class="stat-change">--</span>
+                            </div>
+                            <p class="stat-label">Diseases Found</p>
+                            <p class="stat-value">0</p>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #10b981);">✓</div>
+                                <span class="stat-change">--</span>
+                            </div>
+                            <p class="stat-label">Healthy Crops</p>
+                            <p class="stat-value">0</p>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">%</div>
+                                <span class="stat-change">--</span>
+                            </div>
+                            <p class="stat-label">Accuracy</p>
+                            <p class="stat-value">0%</p>
+                        </div>
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="chart-container full-width">
+                            <h3 class="chart-title">Detection Trend (Last 7 Days)</h3>
+                            <canvas id="detectionChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3 class="chart-title">Scans by Crop</h3>
+                            <canvas id="cropChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3 class="chart-title">Severity Breakdown</h3>
+                            <canvas id="severityChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-container full-width">
+                        <h3 class="chart-title">Recent Detections</h3>
+                        <div class="table-wrapper">
+                            <table class="detections-table">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Crop Type</th>
+                                        <th>Disease</th>
+                                        <th>Confidence</th>
+                                        <th>Severity</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detectionsTableBody">
+                                    <tr id="emptyTableRow">
+                                        <td colspan="6" style="text-align: center; padding: 24px; color: #9ca3af;">No detection data yet. Analyze an image to see results here.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scan Page -->
+                <div class="page" id="scan-page">
+                    <div class="scan-container">
+                        <!-- Capture Mode Tabs -->
+                        <div class="capture-tabs">
+                            <button class="capture-tab-btn active" id="uploadTabBtn" data-mode="upload">Upload Image</button>
+                            <button class="capture-tab-btn" id="cameraTabBtn" data-mode="camera">Live Camera</button>
+                        </div>
+
+                        <!-- Upload Zone -->
+                        <div id="uploadMode" class="capture-mode active">
+                            <div class="upload-zone" id="uploadZone">
+                                <div class="upload-icon">📸</div>
+                                <p class="upload-text">Click to upload or drag & drop</p>
+                                <p class="upload-subtext">PNG, JPG, JPEG, GIF, BMP (Max 16MB) &mdash; multiple files supported</p>
+                                <input type="file" id="fileInput" accept="image/*" multiple hidden>
+                            </div>
+
+                            <div id="fileQueue" class="file-queue" style="display:none;"></div>
+
+                            <div id="previewSection" class="preview-section" style="display:none;">
+                                <h3>Selected Image</h3>
+                                <img id="previewImage" class="preview-img" alt="Preview">
+                                <div class="file-info">
+                                    <p>File: <span id="fileName"></span></p>
+                                    <p id="fileSize"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Camera Capture Mode -->
+                        <div id="cameraMode" class="capture-mode">
+                            <div class="camera-wrapper">
+                                <video id="cameraStream" class="camera-stream" autoplay muted playsinline></video>
+                                <div class="camera-controls">
+                                    <button class="btn-primary" id="captureBtn" style="display: none;">📷 Capture Photo</button>
+                                    <button class="btn-secondary" id="toggleCameraBtn">▶ Start Camera</button>
+                                </div>
+                                <canvas id="captureCanvas" style="display: none;"></canvas>
+                            </div>
+
+                            <div id="cameraQueue" class="file-queue" style="display:none;"></div>
+
+                            <div id="cameraCaptureSection" class="preview-section" style="display: none;">
+                                <h3>Last Captured</h3>
+                                <img id="capturedImage" class="preview-img" alt="Captured">
+                            </div>
+                        </div>
+
+                        <div id="analysisResult" class="analysis-result" style="display: none;">
+                            <div id="resultContent"></div>
+                        </div>
+
+                        <div class="scan-buttons">
+                            <button class="btn-primary" id="analyzeBtn" style="display: none;">Analyze Image</button>
+                            <button class="btn-primary" id="analyzeBatchBtn" style="display: none;">Analyze All Images</button>
+                            <button class="btn-secondary" id="clearBtn" style="display: none;">Clear</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Disease Library Page -->
+                <div class="page" id="diseases-page">
+                    <div class="library-wrapper">
+                        <div class="library-filters">
+                            <input type="text" id="diseaseSearch" placeholder="Search diseases...">
+                            <select id="cropFilter">
+                                <option>All Crops</option>
+                                <option>Wheat</option>
+                                <option>Maize</option>
+                                <option>Sugarcane</option>
+                                <option>Cotton</option>
+                                <option>Rice</option>
+                            </select>
+                        </div>
+
+                        <div class="library-content">
+                            <div class="diseases-list" id="diseasesList"></div>
+                            <div class="disease-details" id="diseaseDetails" style="display: none;">
+                                <button class="close-details">&times;</button>
+                                <div id="diseaseDetailsContent"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Page -->
+                <div class="page" id="settings-page">
+                    <div class="settings-wrapper">
+                        <div class="settings-tabs">
+                            <button class="tab-btn active" data-tab="model">Model</button>
+                            <button class="tab-btn" data-tab="notifications">Notifications</button>
+                        </div>
+
+                        <div class="settings-content">
+                            <!-- Model Settings -->
+                            <div class="tab-content active" id="model-tab">
+                                <div class="settings-section">
+                                    <h3>Active Models</h3>
+                                    <p class="section-desc">Two distinct models are loaded at runtime. The Fine-tuned model is used for every prediction.</p>
+                                    <div id="modelStatusContainer" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 15px 0;">
+                                        <div style="padding: 12px; background: #eff6ff; border-radius: 8px; border-left: 4px solid #1976d2;">
+                                            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+                                                <p style="font-weight: 600; margin: 0;">Fine-tuned Model</p>
+                                                <span style="font-size:10px;background:#dbeafe;color:#1d4ed8;padding:2px 6px;border-radius:4px;font-weight:600;">PRIMARY</span>
+                                            </div>
+                                            <p style="margin: 0 0 2px 0; font-size: 11px; color: #4b5563; font-family:monospace;">crop_disease_finetuned.keras</p>
+                                            <p style="margin: 0 0 4px 0; font-size: 11px; color: #6b7280;">MobileNetV2 &bull; 224&times;224 &bull; 40 classes &bull; ~18.6 MB</p>
+                                            <p style="margin: 0 0 6px 0; font-size: 11px; color: #374151;">Best accuracy. Default for all predictions. Covers all 5 crops including <strong>Cotton</strong> (13 conditions).</p>
+                                            <p id="finetuned-status" style="margin: 0; font-size: 12px; color: #999;">Loading...</p>
+                                        </div>
+                                        <div style="padding: 12px; background: #f0fdf4; border-radius: 8px; border-left: 4px solid #388e3c;">
+                                            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+                                                <p style="font-weight: 600; margin: 0;">Base Model</p>
+                                                <span style="font-size:10px;background:#dcfce7;color:#166534;padding:2px 6px;border-radius:4px;font-weight:600;">FALLBACK</span>
+                                            </div>
+                                            <p style="margin: 0 0 2px 0; font-size: 11px; color: #4b5563; font-family:monospace;">plant_disease_model.keras</p>
+                                            <p style="margin: 0 0 4px 0; font-size: 11px; color: #6b7280;">MobileNetV2 &bull; 160&times;160 &bull; 40 classes &bull; ~9 MB</p>
+                                            <p style="margin: 0 0 6px 0; font-size: 11px; color: #374151;">Original base model. Slightly lower accuracy due to 160px input. Same 40-class coverage.</p>
+                                            <p id="base-status" style="margin: 0; font-size: 12px; color: #999;">Loading...</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="settings-section">
+                                    <h3>Cotton Crop Recognition</h3>
+                                    <p class="section-desc">The Fine-tuned Model handles all 13 cotton-specific conditions</p>
+                                    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
+                                        <span style="font-size:11px;background:#fef3c7;border:1px solid #fcd34d;padding:3px 8px;border-radius:4px;">American Bollworm</span>
+                                        <span style="font-size:11px;background:#fef3c7;border:1px solid #fcd34d;padding:3px 8px;border-radius:4px;">Anthracnose</span>
+                                        <span style="font-size:11px;background:#fef3c7;border:1px solid #fcd34d;padding:3px 8px;border-radius:4px;">Cotton Aphid</span>
+                                        <span style="font-size:11px;background:#fef3c7;border:1px solid #fcd34d;padding:3px 8px;border-radius:4px;">Leaf Curl</span>
+                                        <span style="font-size:11px;background:#fef3c7;border:1px solid #fcd34d;padding:3px 8px;border-radius:4px;">bollworm</span>
+                                        <span style="font-size:11px;background:#fef3c7;border:1px solid #fcd34d;padding:3px 8px;border-radius:4px;">bollrot</span>
+                                        <span style="font-size:11px;background:#fef3c7;border:1px solid #fcd34d;padding:3px 8px;border-radius:4px;">pink bollworm</span>
+                                        <span style="font-size:11px;background:#fef3c7;border:1px solid #fcd34d;padding:3px 8px;border-radius:4px;">mealy bug</span>
+                                        <span style="font-size:11px;background:#fef3c7;border:1px solid #fcd34d;padding:3px 8px;border-radius:4px;">whitefly</span>
+                                        <span style="font-size:11px;background:#fef3c7;border:1px solid #fcd34d;padding:3px 8px;border-radius:4px;">red cotton bug</span>
+                                        <span style="font-size:11px;background:#fef3c7;border:1px solid #fcd34d;padding:3px 8px;border-radius:4px;">thrips</span>
+                                        <span style="font-size:11px;background:#fef3c7;border:1px solid #fcd34d;padding:3px 8px;border-radius:4px;">Wilt</span>
+                                        <span style="font-size:11px;background:#dcfce7;border:1px solid #86efac;padding:3px 8px;border-radius:4px;">Healthy Cotton</span>
+                                    </div>
+                                </div>
+
+                                <div class="settings-section">
+                                    <h3>All Model Files on Disk</h3>
+                                    <p class="section-desc">10 files in backend/models/ &mdash; only the 2 ACTIVE models are loaded at runtime</p>
+                                    <table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:10px;">
+                                        <thead>
+                                            <tr style="background:#f9fafb;text-align:left;">
+                                                <th style="padding:8px 10px;border-bottom:1px solid #e5e7eb;font-weight:600;color:#374151;">File</th>
+                                                <th style="padding:8px 10px;border-bottom:1px solid #e5e7eb;font-weight:600;color:#374151;">Purpose</th>
+                                                <th style="padding:8px 10px;border-bottom:1px solid #e5e7eb;font-weight:600;color:#374151;">State</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr style="background:#eff6ff;">
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;font-family:monospace;color:#1e40af;white-space:nowrap;">crop_disease_finetuned.keras</td>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;color:#374151;">Fine-tuned MobileNetV2 &bull; 224&times;224 &bull; all 40 classes &bull; <strong>PRIMARY</strong> prediction model</td>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;"><span style="background:#dbeafe;color:#1d4ed8;padding:2px 7px;border-radius:4px;font-weight:600;white-space:nowrap;">Active</span></td>
+                                            </tr>
+                                            <tr style="background:#f0fdf4;">
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;font-family:monospace;color:#166534;white-space:nowrap;">plant_disease_model.keras</td>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;color:#374151;">Base MobileNetV2 &bull; 160&times;160 &bull; all 40 classes &bull; fallback / comparison model</td>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;"><span style="background:#dcfce7;color:#166534;padding:2px 7px;border-radius:4px;font-weight:600;white-space:nowrap;">Active</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;font-family:monospace;color:#9ca3af;white-space:nowrap;">maize_disease_model.keras</td>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;color:#9ca3af;">Intended maize-specific &bull; identical weights to finetuned (18.6 MB) &bull; not loaded</td>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;"><span style="background:#f3f4f6;color:#6b7280;padding:2px 7px;border-radius:4px;white-space:nowrap;">Redundant</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;font-family:monospace;color:#9ca3af;white-space:nowrap;">rice_disease_model.keras</td>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;color:#9ca3af;">Intended rice-specific &bull; identical weights to finetuned &bull; not loaded</td>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;"><span style="background:#f3f4f6;color:#6b7280;padding:2px 7px;border-radius:4px;white-space:nowrap;">Redundant</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;font-family:monospace;color:#9ca3af;white-space:nowrap;">sugarcane_disease_model.keras</td>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;color:#9ca3af;">Intended sugarcane-specific &bull; identical weights to finetuned &bull; not loaded</td>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;"><span style="background:#f3f4f6;color:#6b7280;padding:2px 7px;border-radius:4px;white-space:nowrap;">Redundant</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;font-family:monospace;color:#9ca3af;white-space:nowrap;">wheat_disease_model.keras</td>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;color:#9ca3af;">Intended wheat-specific &bull; identical weights to finetuned &bull; not loaded</td>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;"><span style="background:#f3f4f6;color:#6b7280;padding:2px 7px;border-radius:4px;white-space:nowrap;">Redundant</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;font-family:monospace;color:#9ca3af;white-space:nowrap;">crop_model.keras</td>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;color:#9ca3af;">Pre-fine-tuning training checkpoint &bull; earlier version &bull; superseded</td>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;"><span style="background:#fff7ed;color:#c2410c;padding:2px 7px;border-radius:4px;white-space:nowrap;">Legacy</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;font-family:monospace;color:#9ca3af;white-space:nowrap;">original_model.keras</td>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;color:#9ca3af;">Initial base model before any training &bull; starting checkpoint</td>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;"><span style="background:#fff7ed;color:#c2410c;padding:2px 7px;border-radius:4px;white-space:nowrap;">Legacy</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;font-family:monospace;color:#9ca3af;white-space:nowrap;">crop_model.h5</td>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;color:#9ca3af;">Older HDF5 format crop model &bull; superseded by .keras</td>
+                                                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;"><span style="background:#fff7ed;color:#c2410c;padding:2px 7px;border-radius:4px;white-space:nowrap;">Legacy</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:8px 10px;font-family:monospace;color:#9ca3af;white-space:nowrap;">wheat_disease_model.h5</td>
+                                                <td style="padding:8px 10px;color:#9ca3af;">Older HDF5 format wheat model &bull; superseded by .keras</td>
+                                                <td style="padding:8px 10px;"><span style="background:#fff7ed;color:#c2410c;padding:2px 7px;border-radius:4px;white-space:nowrap;">Legacy</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="settings-section">
+                                    <h3>Prediction Settings</h3>
+                                    <div class="setting-item">
+                                        <label>Confidence Threshold</label>
+                                        <input type="range" min="0.5" max="0.99" step="0.01" value="0.65" id="confidenceThreshold">
+                                        <span id="thresholdValue">65%</span>
+                                    </div>
+                                    <p style="font-size: 12px; color: #999; margin-top: 8px;">Predictions below this threshold will be marked as "Unable to determine"</p>
+                                </div>
+                            </div>
+
+                            <!-- Notification Settings -->
+                            <div class="tab-content" id="notifications-tab">
+                                <div class="settings-section">
+                                    <h3>Notification Preferences</h3>
+                                    <div class="toggle-row">
+                                        <div>
+                                            <p>Browser Notifications</p>
+                                            <small>Show in-browser alerts for scan results</small>
+                                        </div>
+                                        <label class="toggle">
+                                            <input type="checkbox" id="browserNotifications" checked>
+                                            <span></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="settings-footer">
+                            <button class="btn-primary" id="saveSettingsBtn">Save Settings</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
